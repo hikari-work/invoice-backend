@@ -1,5 +1,5 @@
 <p align="center">
-<img src="res/qriss.png" alt="QR Code" width="600"/>
+<img src="res/qriss.png" alt="QR Code" width="150"/>
 </p>
 
 # QRIS OrderKuota Payment Verifikator
@@ -11,5 +11,22 @@ QRIS OrderKuota.
 - Melihat mutasi QRIS OrderKuota
 - Sudah
 
-Dukung saya di
-<img src="res/QRIS.jpg">
+Dukung saya di, dimana
+
+Instruksi Pemakaian
+
+1. Install Docker
+   From `https://get.docker.com`:
+```shell
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+```
+2. Edit Flag in Dockerfile
+3. Jalankan
+```shell
+docker build -t orkut-integration-app .
+```
+4. Jalankan
+```shell
+docker run -d --name integration-orderkuota -p 9999:9999 orkut-integration-app
+```
