@@ -21,12 +21,17 @@ Instruksi Pemakaian
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 ```
-2. Edit Flag in Dockerfile
-3. Jalankan
+2. Clone  Repository
+3. Jalankan Install Dependecy maven
+   ```shell
+   mvn clean package
+   ```
+4. Edit Flag in Dockerfile
+5. Jalankan
 ```shell
 docker build -t orkut-integration-app .
 ```
-4. Jalankan
+6. Jalankan
 ```shell
 docker run -d --name integration-orderkuota -p 9999:9999 orkut-integration-app
 ```
