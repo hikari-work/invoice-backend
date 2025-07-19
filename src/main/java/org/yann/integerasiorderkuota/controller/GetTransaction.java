@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.yann.integerasiorderkuota.client.settlement.SettlementDTO;
 import org.yann.integerasiorderkuota.entity.User;
+import org.yann.integerasiorderkuota.exception.UserNotFoundException;
 import org.yann.integerasiorderkuota.service.TransactionService;
 import org.yann.integerasiorderkuota.service.UserService;
 
@@ -29,7 +30,9 @@ public class GetTransaction {
 	public ResponseEntity<SettlementDTO> getAllData(@PathVariable("id") String userId) {
 		log.info("Username is {}", userId);
 		User user = userService.getUserDetailsByUsername(userId);
-		log.info("User is {}", user.getId());
+		if (user == null) {
+			throw new UserNotFoundException("User Not Found");
+		}
 		SettlementDTO settlementDTO = transactionService.sendCallback(user);
 		if (settlementDTO != null) {
 			return ResponseEntity.ok(settlementDTO);
