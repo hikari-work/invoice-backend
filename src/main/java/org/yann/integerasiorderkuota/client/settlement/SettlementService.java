@@ -145,7 +145,7 @@ public class SettlementService {
 		executor.shutdown();
 
 		list = list.stream()
-				.sorted(Comparator.comparingLong(SettlementDTO.QrisTransaction::getId))
+				.sorted(Comparator.comparingLong(SettlementDTO.QrisTransaction::getId).reversed())
 				.collect(Collectors.toList());
 
 		dto.getQrisHistory().setResults(list);
