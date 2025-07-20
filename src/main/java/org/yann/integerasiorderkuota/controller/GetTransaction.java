@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.yann.integerasiorderkuota.client.settlement.SettlementDTO;
+import org.yann.integerasiorderkuota.client.settlement.SettlementService;
 import org.yann.integerasiorderkuota.entity.User;
 import org.yann.integerasiorderkuota.exception.UserNotFoundException;
 import org.yann.integerasiorderkuota.service.TransactionService;
@@ -20,10 +21,12 @@ public class GetTransaction {
 	private static final Logger log = LoggerFactory.getLogger(GetTransaction.class);
 	private final TransactionService transactionService;
 	private final UserService userService;
+	private final SettlementService settlementService;
 
-	public GetTransaction(TransactionService transactionService, UserService userService) {
+	public GetTransaction(TransactionService transactionService, UserService userService, SettlementService settlementService) {
 		this.transactionService = transactionService;
 		this.userService = userService;
+		this.settlementService = settlementService;
 	}
 
 	@GetMapping("/history/{id}")
@@ -35,6 +38,24 @@ public class GetTransaction {
 		}
 		SettlementDTO settlementDTO = transactionService.sendCallback(user);
 		if (settlementDTO != null) {
+			return ResponseEntity.ok(settlementDTO);
+		} else {
+			log.error("Settlement data is null");
+			return ResponseEntity.notFound().build();
+		}
+	}
+	@GetMapping("/mutasi/{id}")
+	public ResponseEntity<SettlementDTO> getAllSettlement(@PathVariable("id") String userId) {
+		log.info("Username is {}", userId);
+		User user = userService.getUserDetailsByUsername(userId);
+		if (user == null) {
+			throw new UserNotFoundException("User Not Found");
+		}
+		SettlementDTO settlementDTO = settlementService.getSettlementAllHistory(user.getId());
+
+		if (settlementDTO != null) {
+			settlementDTO.getQrisHistory().setPage(null);
+			settlementDTO.getQrisHistory().setPages(null);
 			return ResponseEntity.ok(settlementDTO);
 		} else {
 			log.error("Settlement data is null");

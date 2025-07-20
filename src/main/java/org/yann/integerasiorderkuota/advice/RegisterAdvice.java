@@ -29,11 +29,14 @@ public class RegisterAdvice {
     @ExceptionHandler(DuplicateUsername.class)
     public ResponseEntity<RegisterDTO<?>> handleDuplicateUsername(DuplicateUsername duplicateUsername) {
         Map<String, String> errors = new HashMap<>();
+
         errors.put("username", duplicateUsername.getMessage());
+
         RegisterDTO<Map<String, String>> response = RegisterDTO.<Map<String, String>>builder()
                 .status("Error")
                 .data(errors)
                 .build();
+
         return ResponseEntity.badRequest().body(response);
     }
 }

@@ -15,6 +15,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(historyInterceptor)
-                .addPathPatterns("/api/history/**");
+                .addPathPatterns("/api/history/**")
+                .addPathPatterns("/api/mutasi/**");
     }
 }

@@ -1,5 +1,6 @@
 package org.yann.integerasiorderkuota.client.settlement;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,11 +24,12 @@ public class SettlementDTO {
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class QrisHistory {
 		private boolean success;
 		private int total;
-		private int page;
-		private int pages;
+		private Integer page;
+		private Integer pages;
 		private List<QrisTransaction> results;
 
 	}
