@@ -117,7 +117,7 @@ public class SettlementService {
 	}
 
 	public SettlementDTO getSettlementAllHistory(String uuid) {
-		// Panggilan halaman pertama
+
 		SettlementDTO dto = getAllSettlement(uuid, String.valueOf(1));
         List<SettlementDTO.QrisTransaction> list = new ArrayList<>(dto.getQrisHistory().getResults());
 
