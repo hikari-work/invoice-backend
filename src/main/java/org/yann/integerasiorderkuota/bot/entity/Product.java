@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product implements Draft{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

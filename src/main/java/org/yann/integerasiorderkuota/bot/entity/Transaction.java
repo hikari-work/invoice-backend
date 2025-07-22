@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "transactions")
-public class Transaction {
+public class Transaction implements Draft{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -21,4 +21,6 @@ public class Stock {
     private Product product;
     @Enumerated(EnumType.STRING)
     private StockStatus status;
+
+    private String data;
 }
