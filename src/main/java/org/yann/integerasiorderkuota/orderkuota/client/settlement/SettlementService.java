@@ -129,7 +129,10 @@ public class SettlementService {
 
 		for (int i = 2; i <= totalPages; i++) {
 			final int page = i;
-			CompletableFuture<List<SettlementDTO.QrisTransaction>> future = CompletableFuture.supplyAsync(() -> getAllSettlement(uuid, String.valueOf(page)).getQrisHistory().getResults(), executor);
+			CompletableFuture<List<SettlementDTO.QrisTransaction>> future = CompletableFuture.supplyAsync(() ->
+					getAllSettlement(uuid, String.valueOf(page))
+							.getQrisHistory()
+							.getResults(), executor);
 			futures.add(future);
 		}
 
