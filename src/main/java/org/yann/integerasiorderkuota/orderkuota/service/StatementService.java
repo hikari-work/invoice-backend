@@ -1,6 +1,8 @@
 package org.yann.integerasiorderkuota.orderkuota.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.yann.integerasiorderkuota.orderkuota.entity.Statement;
 import org.yann.integerasiorderkuota.orderkuota.entity.StatementStatus;
@@ -39,6 +41,10 @@ public class StatementService {
     }
     public void saveAllStatements(Set<Statement> statements) {
         statementRepository.saveAll(statements);
+    }
+
+    public Page<Statement> getStatementsByUser(String username, int page, int size) {
+        return statementRepository.findByUsername(username, PageRequest.of(page, size));
     }
 
 }
