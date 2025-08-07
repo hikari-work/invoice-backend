@@ -8,6 +8,7 @@ import org.yann.integerasiorderkuota.orderkuota.exception.DuplicateUsername;
 import org.yann.integerasiorderkuota.orderkuota.repository.UserRepository;
 import org.yann.integerasiorderkuota.orderkuota.security.BCrypt;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,6 +42,9 @@ public class UserService {
 			user.setToken(token);
 			userRepository.save(user);
 		});
+	}
+	public List<User> getAllUser() {
+		return userRepository.findAll();
 	}
 	public User getUserDetailsByUUID(String uuid) {
 		return userRepository.findById(uuid).orElse(null);
