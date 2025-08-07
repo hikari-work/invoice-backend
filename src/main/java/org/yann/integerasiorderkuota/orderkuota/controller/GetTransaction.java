@@ -40,13 +40,12 @@ public class GetTransaction {
 		if (settlementDTO != null) {
 			return ResponseEntity.ok(settlementDTO);
 		} else {
-			log.error("Settlement data is null");
+			log.error("Settlement First data is null");
 			return ResponseEntity.notFound().build();
 		}
 	}
 	@GetMapping("/mutasi/{id}")
 	public ResponseEntity<SettlementDTO> getAllSettlement(@PathVariable("id") String userId) {
-		log.info("Username is {}", userId);
 		User user = userService.getUserDetailsByUsername(userId);
 		if (user == null) {
 			throw new UserNotFoundException("User Not Found");

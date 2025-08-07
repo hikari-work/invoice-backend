@@ -30,6 +30,13 @@ public class UserService {
 				.build());
 	}
 	@Transactional
+	public void saveCallbackData(String username, String callbackData) {
+		userRepository.findByUsername(username).ifPresent(user -> {
+			user.setCallbackUrl(callbackData);
+			userRepository.save(user);
+		});
+	}
+	@Transactional
 	public void saveEmail(String email, String username) {
 		userRepository.findByUsername(username).ifPresent(user -> {
 			user.setEmail(email);

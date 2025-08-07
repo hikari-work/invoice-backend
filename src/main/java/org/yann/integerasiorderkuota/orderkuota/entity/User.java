@@ -23,4 +23,10 @@ public class User {
 	private String token;
 	private String callbackUrl;
 
+	@Lob
+	private byte[] qrisImage;
+
+	private String qrisString;
+
+
 }
