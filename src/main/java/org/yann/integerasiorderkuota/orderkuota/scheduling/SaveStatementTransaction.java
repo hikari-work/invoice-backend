@@ -11,6 +11,7 @@ import org.yann.integerasiorderkuota.orderkuota.service.StatementService;
 import org.yann.integerasiorderkuota.orderkuota.service.UserService;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -30,12 +31,15 @@ public class SaveStatementTransaction {
 
             List<SettlementDTO.QrisTransaction> results = dto.getQrisHistory().getResults();
 
-            for (SettlementDTO.QrisTransaction result : results) {
-                if (!statementService.isExistStatementById(result.getId())) {
-                    Statement statement = new Statement(result, user.getUsername());
-                    statementService.saveStatement(statement);
-                }
-            }
+            List<Long> ids = results.stream()
+                    .map(SettlementDTO.QrisTransaction::getId)
+                    .toList();
+            Set<Long> existingStatementIds = statementService.getAllStatementByIds(Set.copyOf(ids));
+            List<Statement> newStatement = results.stream()
+                    .filter(result -> !existingStatementIds.contains(result.getId()))
+                    .map(result -> new Statement(result, user.getUsername()))
+                    .toList();
+            statementService.saveAllStatements(Set.copyOf(newStatement));
         });
 
     }

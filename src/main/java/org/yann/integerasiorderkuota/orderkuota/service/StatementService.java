@@ -6,6 +6,9 @@ import org.yann.integerasiorderkuota.orderkuota.entity.Statement;
 import org.yann.integerasiorderkuota.orderkuota.entity.StatementStatus;
 import org.yann.integerasiorderkuota.orderkuota.repository.StatementRepository;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class StatementService {
@@ -27,6 +30,15 @@ public class StatementService {
             statement.setStatementStatus(StatementStatus.NOT_CLAIMED);
             statementRepository.save(statement);
         }
+    }
+    public Set<Long> getAllStatementByIds(Set<Long> id) {
+        return statementRepository.findAllById(id)
+                .stream()
+                .map(Statement::getId)
+                .collect(Collectors.toSet());
+    }
+    public void saveAllStatements(Set<Statement> statements) {
+        statementRepository.saveAll(statements);
     }
 
 }
