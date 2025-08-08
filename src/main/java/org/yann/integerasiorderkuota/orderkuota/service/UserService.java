@@ -1,8 +1,6 @@
 package org.yann.integerasiorderkuota.orderkuota.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
-	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 	private final UserRepository userRepository;
 	private final QRService qRService;
 
@@ -36,13 +33,6 @@ public class UserService {
 						.username(username)
 						.password(hashpwed)
 				.build());
-	}
-	@Transactional
-	public void saveCallbackData(String username, String callbackData) {
-		userRepository.findByUsername(username).ifPresent(user -> {
-			user.setCallbackUrl(callbackData);
-			userRepository.save(user);
-		});
 	}
 	@Transactional
 	public void saveEmail(String email, String username) {
