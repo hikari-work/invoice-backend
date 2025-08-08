@@ -1,42 +1,35 @@
-package org.yann.integerasiorderkuota.orderkuota.controller;
+package org.yann.integerasiorderkuota.orderkuota.controller.v2;
 
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.yann.integerasiorderkuota.orderkuota.client.login.LoginService;
 import org.yann.integerasiorderkuota.orderkuota.client.otp.GenerateOTP;
-import org.yann.integerasiorderkuota.orderkuota.dto.GenerateOtpRequest;
-import org.yann.integerasiorderkuota.orderkuota.dto.RegisterDTO;
-import org.yann.integerasiorderkuota.orderkuota.dto.RegisterResponse;
-import org.yann.integerasiorderkuota.orderkuota.dto.RequestRegisterDTO;
+import org.yann.integerasiorderkuota.orderkuota.dto.*;
 import org.yann.integerasiorderkuota.orderkuota.entity.User;
 import org.yann.integerasiorderkuota.orderkuota.service.UserService;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Deprecated
 @RestController
-@RequestMapping("/api")
-public class RegisterController {
+@RequestMapping("/api/v2/users")
+public class UserController {
 
     private final LoginService loginService;
     private final GenerateOTP generateOTP;
     private final UserService userService;
 
-    public RegisterController(LoginService loginService, GenerateOTP generateOTP, UserService userService) {
+    public UserController(LoginService loginService, GenerateOTP generateOTP, UserService userService) {
         this.loginService = loginService;
         this.generateOTP = generateOTP;
         this.userService = userService;
     }
 
     @PostMapping(value = "/auth",
-    produces = MediaType.APPLICATION_JSON_VALUE,
-    consumes = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterDTO<?>> register(@Valid @RequestBody RequestRegisterDTO register) {
         userService.deleteByUsername(register.getUsername());
         userService.saveUsernameAndPassword(register.getUsername(), register.getPassword());
@@ -53,8 +46,9 @@ public class RegisterController {
                 .data(Map.of("email", s))
                 .build());
     }
+
     @PostMapping(value = "/auth/otp", produces = MediaType.APPLICATION_JSON_VALUE,
-    consumes = MediaType.APPLICATION_JSON_VALUE)
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterDTO<?>> registerOtp(@Valid @RequestBody GenerateOtpRequest otpRequest) {
         String s = loginService.loginOrkut(otpRequest.getUsername(), otpRequest.getOtp());
         if (s == null) {
@@ -68,8 +62,25 @@ public class RegisterController {
         User userDetailsByUsername = userService.getUserDetailsByUsername(otpRequest.getUsername());
         RegisterResponse registerResponse = new RegisterResponse(userDetailsByUsername);
         return ResponseEntity.ok(RegisterDTO.<RegisterResponse>builder()
-                        .status("OK")
-                        .data(registerResponse)
+                .status("OK")
+                .data(registerResponse)
                 .build());
     }
+
+    @GetMapping("/details/{username}")
+    public ResponseEntity<UserDetailsResponse> isValidUser(@PathVariable("username") String username) {
+        User userDetailsByUsername = userService.getUserDetailsByUsername(username);
+        UserDetailsResponse userDetailsResponse = new UserDetailsResponse(userDetailsByUsername);
+        return ResponseEntity.ok(userDetailsResponse);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<UserDetailsResponse> updateUser(@RequestBody UpdateRequestUser updateRequestUser) {
+        String username = updateRequestUser.getUsername();
+        userService.updateUser(username, updateRequestUser);
+        User userDetailsByUsername = userService.getUserDetailsByUsername(username);
+        UserDetailsResponse userDetailsResponse = new UserDetailsResponse(userDetailsByUsername);
+        return ResponseEntity.ok(userDetailsResponse);
+    }
+
 }

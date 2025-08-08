@@ -13,7 +13,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementDTO;
+import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementService;
+import org.yann.integerasiorderkuota.orderkuota.service.TransactionService;
 import org.yann.integerasiorderkuota.orderkuota.service.UserService;
+
+import java.util.concurrent.CompletableFuture;
 
 
 @Component
@@ -23,6 +28,8 @@ public class LoginService {
 	private static final Logger log = LoggerFactory.getLogger(LoginService.class);
 	private final RestTemplate restTemplateBuilder = new RestTemplate();
 	private final UserService userService;
+	private final TransactionService transactionService;
+	private final SettlementService settlementService;
 
 	public String loginOrkut(String username, String loginOtp) {
 		String url = "https://app.orderkuota.com/api/v2/login";
@@ -54,6 +61,10 @@ public class LoginService {
 				return null;
 			}
 			userService.saveToken(loginDTO.getResults().getToken(), username);
+			SettlementDTO settlement = settlementService.getSettlement(loginDTO.getResults().getToken());
+			CompletableFuture.runAsync(() -> {
+				userService.updateUserString(settlement, username);
+			});
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}

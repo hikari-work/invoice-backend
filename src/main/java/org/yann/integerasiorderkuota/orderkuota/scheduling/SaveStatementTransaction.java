@@ -39,6 +39,7 @@ public class SaveStatementTransaction {
                     .filter(result -> !existingStatementIds.contains(result.getId()))
                     .map(result -> new Statement(result, user.getUsername()))
                     .toList();
+
             statementService.saveAllStatements(Set.copyOf(newStatement));
         });
 

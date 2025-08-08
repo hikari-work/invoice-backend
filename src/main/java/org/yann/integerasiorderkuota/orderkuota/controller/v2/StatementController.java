@@ -8,7 +8,7 @@ import org.yann.integerasiorderkuota.orderkuota.entity.Statement;
 import org.yann.integerasiorderkuota.orderkuota.service.StatementService;
 
 @RestController
-@RequestMapping("/api/v2")
+@RequestMapping("/api/v2/statements")
 public class StatementController {
 
     private final StatementService statementService;

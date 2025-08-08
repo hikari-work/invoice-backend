@@ -1,8 +1,14 @@
 package org.yann.integerasiorderkuota.orderkuota.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementDTO;
+import org.yann.integerasiorderkuota.orderkuota.dto.UpdateRequestUser;
 import org.yann.integerasiorderkuota.orderkuota.entity.User;
 import org.yann.integerasiorderkuota.orderkuota.exception.DuplicateUsername;
 import org.yann.integerasiorderkuota.orderkuota.repository.UserRepository;
@@ -15,7 +21,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
+	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 	private final UserRepository userRepository;
+	private final QRService qRService;
 
 	@Transactional
 	public void saveUsernameAndPassword(String username, String password) {
@@ -57,7 +65,6 @@ public class UserService {
 		return userRepository.findById(uuid).orElse(null);
 	}
 	public User getUserDetailsByUsername(String username) {
-
 		return userRepository.findByUsername(username).orElse(null);
 	}
 	public boolean isValidToken(String token) {
@@ -66,6 +73,45 @@ public class UserService {
 	@Transactional
 	public void deleteByUsername(String username) {
 		userRepository.deleteByUsername(username);
+	}
+
+	@Transactional
+	public void updateUserString(SettlementDTO dto, String username) {
+		byte[] qrisImage = getQrisImage(dto.getAccount().getResults().getQris());
+		userRepository.findByUsername(username).ifPresent(user -> {
+			user.setQrisImage(qrisImage);
+			user.setQrisString(qRService.decode(qrisImage));
+			userRepository.save(user);
+		});
+	}
+
+	public byte[] getQrisImage(String url) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(List.of(MediaType.IMAGE_PNG));
+		HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+		ResponseEntity<byte[]> responseEntity = new RestTemplateBuilder().build()
+				.exchange(url, HttpMethod.GET, requestEntity, byte[].class);
+		return responseEntity.getBody();
+	}
+	@Transactional
+	public void updateUser(String username, UpdateRequestUser requestUser) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+		user.setUsername(user.getUsername());
+		if (requestUser.getEmail() != null) {
+			user.setEmail(requestUser.getEmail());
+		}
+		if (requestUser.getCallbackUrl() != null) {
+			user.setCallbackUrl(requestUser.getCallbackUrl());
+		}
+		if (requestUser.getQrisString() != null) {
+			user.setQrisString(requestUser.getQrisString());
+		}
+		if (requestUser.getQrisImage() != null) {
+			user.setQrisImage(requestUser.getQrisImage());
+		}
+		userRepository.save(user);
 	}
 
 }

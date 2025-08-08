@@ -1,5 +1,6 @@
 package org.yann.integerasiorderkuota.orderkuota.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementDTO;
@@ -30,9 +31,11 @@ public class Statement {
     private String status;
 
     @Enumerated(EnumType.STRING)
+    @JsonProperty("statement_status")
     private StatementStatus statementStatus;
 
     @Column(name = "transfer_time")
+    @JsonProperty("transfer_time")
     private LocalDateTime transferTime;
 
     public Statement(SettlementDTO.QrisTransaction transaction, String username) {
