@@ -9,6 +9,7 @@ import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementDTO;
 import org.yann.integerasiorderkuota.orderkuota.dto.UpdateRequestUser;
 import org.yann.integerasiorderkuota.orderkuota.entity.User;
 import org.yann.integerasiorderkuota.orderkuota.exception.DuplicateUsername;
+import org.yann.integerasiorderkuota.orderkuota.exception.UserNotFoundException;
 import org.yann.integerasiorderkuota.orderkuota.repository.UserRepository;
 import org.yann.integerasiorderkuota.orderkuota.security.BCrypt;
 
@@ -87,7 +88,7 @@ public class UserService {
 	@Transactional
 	public void updateUser(String username, UpdateRequestUser requestUser) {
 		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+				.orElseThrow(() -> new UserNotFoundException("User Not Found"));
 		user.setUsername(user.getUsername());
 		if (requestUser.getEmail() != null) {
 			user.setEmail(requestUser.getEmail());
