@@ -3,7 +3,6 @@ package org.yann.integerasiorderkuota.orderkuota.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.yann.integerasiorderkuota.orderkuota.entity.Invoice;
 import org.yann.integerasiorderkuota.orderkuota.entity.InvoiceStatus;
@@ -12,6 +11,7 @@ import org.yann.integerasiorderkuota.orderkuota.repository.InvoiceRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,11 +58,7 @@ public class InvoiceService {
         return invoiceRepository.getInvoiceByUsernameAndCreatedAt(userId, createdAt, PageRequest.of(page, size));
     }
     public Long amountCalculator(Long amount) {
-        Long generateAmount = amount;
-        while (isExistingInvoiceActive(generateAmount)) {
-            generateAmount += 1;
-        }
-        return generateAmount;
+        return invoiceRepository.findNextAvailableAmount(amount);
     }
     @Transactional
     public void updateInvoiceStatus(String id, InvoiceStatus status) {
@@ -72,6 +68,10 @@ public class InvoiceService {
             invoice.setPaidAt(System.currentTimeMillis());
             invoiceRepository.save(invoice);
         });
+    }
+    @Transactional
+    public void updateInvoicesToPaid(Collection<String> ids) {
+        invoiceRepository.updateInvoicesToPaid(ids);
     }
 
 }

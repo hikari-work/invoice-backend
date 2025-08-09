@@ -1,6 +1,7 @@
 package org.yann.integerasiorderkuota.orderkuota.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 @Getter
@@ -16,6 +17,7 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
+
 	private String email;
 	private String password;
 

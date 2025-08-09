@@ -75,7 +75,7 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<UserDetailsResponse> updateUser(@RequestBody UpdateRequestUser updateRequestUser) {
+    public ResponseEntity<UserDetailsResponse> updateUser(@Valid @RequestBody UpdateRequestUser updateRequestUser) {
         String username = updateRequestUser.getUsername();
         userService.updateUser(username, updateRequestUser);
         User userDetailsByUsername = userService.getUserDetailsByUsername(username);

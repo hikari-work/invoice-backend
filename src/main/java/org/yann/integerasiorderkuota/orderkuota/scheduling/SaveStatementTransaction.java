@@ -2,6 +2,8 @@ package org.yann.integerasiorderkuota.orderkuota.scheduling;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementDTO;
@@ -14,6 +16,8 @@ import org.yann.integerasiorderkuota.orderkuota.service.UserService;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class SaveStatementTransaction {
     private final StatementService statementService;
     private final InvoiceService invoiceService;
     private final RestTemplateBuilder restTemplateBuilder;
+    private final AsyncConfigurer asyncConfigurer;
 
     @Scheduled(fixedRate = 10_000)
     public void saveStatementTransaction() {
@@ -49,24 +54,27 @@ public class SaveStatementTransaction {
     }
     @Scheduled(fixedRate = 10_000)
     public void getPaidInvoice() {
-        Map<String, String> invoiceMap = new HashMap<>();
-        List<Invoice> pendingInvoice = invoiceService.getPendingInvoice()
+        Map<Long, Invoice> invoiceByAmount = invoiceService.getPendingInvoice()
                 .stream()
                 .filter(invoice -> invoice.getExpiresAt() > System.currentTimeMillis())
-                .toList();
+                .collect(Collectors.toMap(Invoice::getAmount, Function.identity()));
 
-        List<Statement> pendingStatement = statementService.getPendingStatement();
+        Map<String, String> invoiceMap = new HashMap<>();
 
-        pendingInvoice.forEach(invoice -> pendingStatement.forEach(statement -> {
-            if (invoice.getAmount().equals(statement.getKredit())) {
-                invoiceMap.put(invoice.getUsername(), invoice.getId());
-                statementService.updateStatementStatusToClaimed(statement.getId());
-                invoiceService.updateInvoiceStatus(invoice.getId(), InvoiceStatus.PAID);
-            }
-        }));
+        statementService.getPendingStatement()
+                .stream()
+                .filter(statement -> invoiceByAmount.containsKey(statement.getKredit()))
+                .forEach(statement -> {
+                    Invoice invoice = invoiceByAmount.get(statement.getKredit());
+                    invoiceMap.put(invoice.getUsername(), invoice.getId());
+                });
+
+        statementService.updateBulkStatement(invoiceMap.values());
+        invoiceService.updateInvoicesToPaid(invoiceMap.values());
 
         sendCallbackUserInvoiceIsPaid(invoiceMap);
     }
+
     public void sendCallbackUserInvoiceIsPaid(Map<String, String> invoice) {
         invoice.forEach((username, invoice1) -> {
             User user = userService.getUserDetailsByUsername(username);
@@ -88,21 +96,26 @@ public class SaveStatementTransaction {
         });
     }
 
-    @Scheduled(fixedRate = 2_000)
-    private void deleteExpiredInvoice() {
-        List<Invoice> pendingInvoice = invoiceService.getPendingInvoice().stream()
-                .filter(invoice -> invoice.getExpiresAt() < System.currentTimeMillis())
-                .toList();
-        pendingInvoice.forEach(invoice -> {
-            invoiceService.updateInvoiceStatus(invoice.getId(), InvoiceStatus.EXPIRED);
-            User user = userService.getUserDetailsByUsername(invoice.getUsername());
-            if (user != null && user.getCallbackUrl() != null) {
-                CallbackDTO dto = new CallbackDTO(invoice);
-                restTemplateBuilder.build().postForEntity(user.getCallbackUrl(), dto, String.class);
-            } else {
-                System.out.println("User or callback URL not found for invoice: " + invoice.getId());
-            }
+    @Scheduled(fixedRate = 60_000)
+    @Async("taskScheduler")
+    public CompletableFuture<Void> deleteExpiredInvoice() {
+        CompletableFuture.runAsync(() -> {
+            List<Invoice> pendingInvoice = invoiceService.getPendingInvoice().stream()
+                    .filter(invoice -> invoice.getExpiresAt() < System.currentTimeMillis())
+                    .toList();
+            pendingInvoice.forEach(invoice -> {
+                invoiceService.updateInvoiceStatus(invoice.getId(), InvoiceStatus.EXPIRED);
+                User user = userService.getUserDetailsByUsername(invoice.getUsername());
+                if (user != null && user.getCallbackUrl() != null) {
+                    invoice.setStatus(InvoiceStatus.EXPIRED);
+                    CallbackDTO dto = new CallbackDTO(invoice);
+                    restTemplateBuilder.build().postForEntity(user.getCallbackUrl(), dto, String.class);
+                } else {
+                    System.out.println("User or callback URL not found for invoice: " + invoice.getId());
+                }
+            });
         });
+        return CompletableFuture.completedFuture(null);
     }
 
 

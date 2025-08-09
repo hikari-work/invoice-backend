@@ -8,6 +8,7 @@ import org.yann.integerasiorderkuota.orderkuota.entity.Statement;
 import org.yann.integerasiorderkuota.orderkuota.entity.StatementStatus;
 import org.yann.integerasiorderkuota.orderkuota.repository.StatementRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -25,6 +26,7 @@ public class StatementService {
     public void updateStatementStatusToClaimed(Long id) {
         statementRepository.findById(id).ifPresent(statement -> {
             statement.setStatementStatus(StatementStatus.CLAIMED);
+            statementRepository.save(statement);
         });
     }
     public void saveStatement(Statement statement) {
@@ -51,6 +53,10 @@ public class StatementService {
 
     public List<Statement> getPendingStatement() {
         return statementRepository.findByStatementStatus(StatementStatus.NOT_CLAIMED);
+    }
+
+    public void updateBulkStatement(Collection<String> statements) {
+        statementRepository.updateStatementsToClaimed(statements);
     }
 
 }
