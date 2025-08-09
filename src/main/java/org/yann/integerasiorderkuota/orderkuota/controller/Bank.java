@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import org.yann.integerasiorderkuota.orderkuota.client.bank.*;
 import org.yann.integerasiorderkuota.orderkuota.exception.RequestParamNotFullFilled;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/bank")
 public class Bank {
@@ -18,24 +20,26 @@ public class Bank {
 
     @GetMapping("/list/{id}")
     public ResponseEntity<BankListsDto> getListBank(@PathVariable("id") String id) {
-        BankResponse bankResponse = bankListRequest.bankListRequest(id);
-        BankListsDto bankListsDto = new BankListsDto(bankResponse.getSendMoney().getResults());
-        return ResponseEntity.ok(bankListsDto);
+        return ResponseEntity.ok(new BankListsDto(bankListRequest.bankListRequest(id)
+                .getSendMoney()
+                .getResults()));
     }
 
     @GetMapping("/inquiry/{id}")
     public ResponseEntity<InquiryResponse> inquiryBankController(
-            @PathVariable("id") String id,
-            @RequestParam(value = "bank") String bank,
-            @RequestParam(value = "no") String inquiryNumber
-    ) {
-        if (bank == null || inquiryNumber == null) {
-            throw new RequestParamNotFullFilled("Bank And No Must Be Filled");
-        }
-        InquiryResponse inquiryResponse = bankInquiryService.GetInquiryName(id, bank, inquiryNumber);
-        return inquiryResponse != null ? ResponseEntity.ok(inquiryResponse) : ResponseEntity.notFound().build();
+            @PathVariable String id,
+            @RequestParam String bank,
+            @RequestParam("no") String inquiryNumber) {
 
+        if (bank == null || inquiryNumber == null) {
+            throw new RequestParamNotFullFilled("Bank and No must be filled");
+        }
+
+        return Optional.ofNullable(bankInquiryService.GetInquiryName(id, bank, inquiryNumber))
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
 
 
 }
