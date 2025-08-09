@@ -108,7 +108,7 @@ public class SaveStatementTransaction {
                     .filter(invoice -> invoice.getExpiresAt() < System.currentTimeMillis())
                     .toList();
             pendingInvoice.forEach(invoice -> {
-                invoiceService.updateInvoiceStatus(invoice.getId(), InvoiceStatus.EXPIRED);
+                invoiceService.updateInvoiceStatus(invoice.getId(), InvoiceStatus.EXPIRED, false);
                 User user = userService.getUserDetailsByUsername(invoice.getUsername());
                 if (user != null && user.getCallbackUrl() != null) {
                     invoice.setStatus(InvoiceStatus.EXPIRED);

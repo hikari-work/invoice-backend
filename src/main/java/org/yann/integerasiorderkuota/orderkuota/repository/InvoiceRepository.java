@@ -30,7 +30,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
     List<Invoice> getInvoiceByStatus(InvoiceStatus status);
 
 
-    @Query("SELECT COALESCE(MAX(i.amount), :amount - 1) + 1 FROM Invoice i WHERE i.status = 'ACTIVE'")
+    @Query("SELECT COALESCE(MAX(i.amount), :amount - 1) + 1 FROM Invoice i WHERE i.status = 'PENDING'")
     Long findNextAvailableAmount(@Param("amount") Long amount);
     @Modifying
     @Query("UPDATE Invoice i " +

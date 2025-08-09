@@ -1,5 +1,8 @@
 package org.yann.integerasiorderkuota.orderkuota.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -14,9 +17,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class InvoiceService {
+
+    private static final Logger log = LoggerFactory.getLogger(InvoiceService.class);
+    @Value("${application.config.random.reff.id}")
+    private boolean randomReffId;
 
     private final InvoiceRepository invoiceRepository;
     private final QrGenerator qrGenerator;
@@ -58,13 +66,28 @@ public class InvoiceService {
         return invoiceRepository.getInvoiceByUsernameAndCreatedAt(userId, createdAt, PageRequest.of(page, size));
     }
     public Long amountCalculator(Long amount) {
+        if (randomReffId) {
+            for (int i = 0; i < 10; i++) {
+                long total = new Random().nextInt(100) + amount;
+                if (!isAmountIsExist(total)) {
+                    log.info("Generated unique amount: {}", total);
+                    return total;
+                }
+            }
+            throw new IllegalStateException("Tidak dapat menemukan jumlah yang unik");
+        }
+        log.info("Using provided amount: {}", amount);
         return invoiceRepository.findNextAvailableAmount(amount);
     }
+
+    private boolean isAmountIsExist(Long amount) {
+        return invoiceRepository.existsByAmountAndStatus(amount, InvoiceStatus.PENDING);
+    }
+
     @Transactional
-    public void updateInvoiceStatus(String id, InvoiceStatus status) {
+    public void updateInvoiceStatus(String id, InvoiceStatus status, boolean isPaid) {
         invoiceRepository.findById(id).ifPresent(invoice -> {
             invoice.setStatus(status);
-            invoice.setPaid(true);
             invoice.setPaidAt(System.currentTimeMillis());
             invoiceRepository.save(invoice);
         });
