@@ -9,6 +9,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.yann.integerasiorderkuota.orderkuota.exception.*;
 
@@ -62,6 +63,13 @@ public class ControllerAdvice {
                 request.getRequestURI()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AsyncRequestTimeoutException.class)
+    public ResponseEntity<String> handleAsyncTimeout(AsyncRequestTimeoutException ex) {
+        return ResponseEntity
+                .status(HttpStatus.REQUEST_TIMEOUT)
+                .body("{\"message\":\"Request timed out\"}");
     }
 
     @ExceptionHandler({RequestParamNotFullFilled.class, IllegalArgumentException.class})

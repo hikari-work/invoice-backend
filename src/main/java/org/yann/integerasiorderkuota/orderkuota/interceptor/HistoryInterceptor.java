@@ -23,22 +23,38 @@ public class HistoryInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("Authorization");
-        if (token == null || mapData.containsKey(token.substring(7))) {
-            if (mapData.get(token) > System.currentTimeMillis()) {
+
+        if (token == null || !token.startsWith("Bearer ")) {
+            return unauthorized(response);
+        }
+
+        String tokenValue = token.substring(7); // Hapus "Bearer "
+
+        Long expiryTime = mapData.get(tokenValue);
+        if (expiryTime != null) {
+            if (expiryTime > System.currentTimeMillis()) {
                 return true;
             } else {
-                mapData.remove(token);
-                if (token == null || !token.startsWith("Bearer ") || !userService.isValidToken(token.substring(7))) {
-                    response.setStatus(401);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"message\": \"Token Invalid\"}");
-                    response.getWriter().flush();
-                    return false;
-                }
-                mapData.put(token.substring(7), System.currentTimeMillis() + 1000 * 60 * 5); // 5 minutes
+                mapData.remove(tokenValue);
             }
         }
 
+        if (!userService.isValidToken(tokenValue)) {
+            return unauthorized(response);
+        }
+
+        mapData.put(tokenValue, System.currentTimeMillis() + (1000L * 60 * 5));
+
         return true;
     }
+
+
+    private boolean unauthorized(HttpServletResponse response) throws Exception {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"message\": \"Token Invalid\"}");
+        response.getWriter().flush();
+        return false;
+    }
+
 }

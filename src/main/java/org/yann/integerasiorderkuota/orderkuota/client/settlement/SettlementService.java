@@ -62,7 +62,6 @@ public class SettlementService {
 				request,
 				String.class
 		);
-		log.info("Hasil : {}", data.getBody());
 		ObjectMapper mapper = new ObjectMapper();
 		SettlementDTO dto;
 		try {
