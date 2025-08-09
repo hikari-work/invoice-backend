@@ -3,6 +3,8 @@ package org.yann.integerasiorderkuota.orderkuota.advice;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -21,6 +23,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class ControllerAdvice {
+
+    private static final Logger log = LoggerFactory.getLogger(ControllerAdvice.class);
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleNotFound(NoHandlerFoundException ex, HttpServletRequest request) {
@@ -67,6 +71,7 @@ public class ControllerAdvice {
 
     @ExceptionHandler(AsyncRequestTimeoutException.class)
     public ResponseEntity<String> handleAsyncTimeout(AsyncRequestTimeoutException ex) {
+        log.info("Error AsyncRequestTimeoutException: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.REQUEST_TIMEOUT)
                 .body("{\"message\":\"Request timed out\"}");

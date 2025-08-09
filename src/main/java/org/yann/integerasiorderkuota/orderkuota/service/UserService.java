@@ -5,8 +5,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.yann.integerasiorderkuota.orderkuota.client.login.LoginService;
-import org.yann.integerasiorderkuota.orderkuota.client.otp.GenerateOTP;
 import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementDTO;
 import org.yann.integerasiorderkuota.orderkuota.dto.*;
 import org.yann.integerasiorderkuota.orderkuota.entity.User;
@@ -15,9 +13,7 @@ import org.yann.integerasiorderkuota.orderkuota.exception.UserNotFoundException;
 import org.yann.integerasiorderkuota.orderkuota.repository.UserRepository;
 import org.yann.integerasiorderkuota.orderkuota.security.BCrypt;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -26,8 +22,6 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final QRService qRService;
-	private final GenerateOTP generateOTP;
-	private final LoginService loginService;
 
 	@Transactional
 	public void saveUsernameAndPassword(String username, String password) {
@@ -111,43 +105,7 @@ public class UserService {
 		userRepository.save(user);
 	}
 
-	@Transactional
-	public RegisterDTO<?> registerUser(RequestRegisterDTO data) {
-		deleteByUsername(data.getUsername());
-		saveUsernameAndPassword(data.getUsername(), data.getPassword());
 
-		String otpEmail = generateOTP.generateOTP(data.getUsername(), data.getPassword());
-
-		if (otpEmail == null || otpEmail.contains("Nama pengguna atau kata sandi tidak benar.")) {
-			return RegisterDTO.<Map<String, String>>builder()
-					.status("Error")
-					.data(Map.of("error", "Username or password Wrong"))
-					.build();
-		}
-
-		return RegisterDTO.builder()
-				.status("Success")
-				.data(Map.of("email", otpEmail))
-				.build();
-	}
-
-	public RegisterDTO<?> verifyOtp(GenerateOtpRequest request) {
-		String session = loginService.loginOrkut(request.getUsername(), request.getOtp());
-		if (session == null) {
-			return RegisterDTO.<Map<String, String>>builder()
-					.status("Error")
-					.data(Map.of("error", "OTP was wrong"))
-					.build();
-		}
-
-		User userDetails = getUserDetailsByUsername(request.getUsername());
-		RegisterResponse registerResponse = new RegisterResponse(userDetails);
-
-		return RegisterDTO.<RegisterResponse>builder()
-				.status("OK")
-				.data(registerResponse)
-				.build();
-	}
 
 
 }

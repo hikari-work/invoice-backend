@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.yann.integerasiorderkuota.orderkuota.dto.*;
 import org.yann.integerasiorderkuota.orderkuota.entity.User;
+import org.yann.integerasiorderkuota.orderkuota.service.RegisterService;
 import org.yann.integerasiorderkuota.orderkuota.service.UserService;
 
 import java.util.Map;
@@ -16,16 +17,18 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final RegisterService registerService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RegisterService registerService) {
         this.userService = userService;
+        this.registerService = registerService;
     }
 
     @PostMapping(value = "/auth",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterDTO<?>> register(@Valid @RequestBody RequestRegisterDTO register) {
-        RegisterDTO<?> registerDTO = userService.registerUser(register);
+        RegisterDTO<?> registerDTO = registerService.registerUser(register);
         return ResponseEntity.ok(RegisterDTO.builder().status("Success")
                 .data(Map.of("email", registerDTO))
                 .build());
@@ -35,7 +38,7 @@ public class UserController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterDTO<?>> registerOtp(@Valid @RequestBody GenerateOtpRequest request) {
-        RegisterDTO<?> response = userService.verifyOtp(request);
+        RegisterDTO<?> response = registerService.verifyOtp(request);
         return ResponseEntity.status(
                 "Error".equalsIgnoreCase(response.getStatus()) ? HttpStatus.BAD_REQUEST : HttpStatus.OK
         ).body(response);

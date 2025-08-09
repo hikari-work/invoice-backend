@@ -19,8 +19,11 @@ public class InvoiceResponse {
     private String createdAt;
     @JsonProperty("qris_string")
     private String qrString;
+    @JsonProperty("invoice_id")
+    private String invoiceId;
 
     public InvoiceResponse(Invoice invoice) {
+        this.invoiceId = invoice.getId();
         this.username = invoice.getUsername();
         this.amount = invoice.getAmount();
         this.status = invoice.getStatus();
