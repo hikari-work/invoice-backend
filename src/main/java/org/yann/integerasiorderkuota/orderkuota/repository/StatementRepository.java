@@ -22,8 +22,6 @@ public interface StatementRepository extends JpaRepository<Statement, Long> {
 
     @Modifying
     @Query("UPDATE Statement s SET s.status = 'CLAIMED' WHERE s.id IN :ids")
-    void updateStatementsToClaimed(@Param("ids") Collection<String> ids);
-
-
+    void updateStatementsToClaimed(@Param("ids") Collection<Long> ids);
 
 }

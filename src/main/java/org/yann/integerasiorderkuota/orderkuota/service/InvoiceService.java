@@ -71,7 +71,7 @@ public class InvoiceService {
     }
     @Transactional
     public void updateInvoicesToPaid(Collection<String> ids) {
-        invoiceRepository.updateInvoicesToPaid(ids);
+        invoiceRepository.updateInvoicesToPaid(ids, System.currentTimeMillis());
     }
 
 }

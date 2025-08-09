@@ -6,6 +6,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import org.springframework.stereotype.Component;
+import org.yann.integerasiorderkuota.orderkuota.exception.GenerateImageFailedException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -61,8 +62,12 @@ public class QrGenerator {
     public String generateQr(String baseQr, Long amount) {
         return generateQrString(baseQr, amount);
     }
-    public byte[] generateQrImage(String baseAmount, Long amount, int width, int height) throws WriterException, IOException {
-        String qrString = generateQrString(baseAmount, amount);
-        return generateImage(qrString, width, height);
+    public byte[] generateQrImage(String baseAmount, Long amount, int width, int height){
+        try {
+            String qrString = generateQrString(baseAmount, amount);
+            return generateImage(qrString, width, height);
+        } catch (WriterException | IOException e) {
+            throw new GenerateImageFailedException("Generation Failed");
+        }
     }
 }

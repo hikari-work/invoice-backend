@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.yann.integerasiorderkuota.orderkuota.entity.Statement;
 import org.yann.integerasiorderkuota.orderkuota.entity.StatementStatus;
 import org.yann.integerasiorderkuota.orderkuota.repository.StatementRepository;
@@ -55,7 +56,8 @@ public class StatementService {
         return statementRepository.findByStatementStatus(StatementStatus.NOT_CLAIMED);
     }
 
-    public void updateBulkStatement(Collection<String> statements) {
+    @Transactional
+    public void updateBulkStatement(Collection<Long> statements) {
         statementRepository.updateStatementsToClaimed(statements);
     }
 

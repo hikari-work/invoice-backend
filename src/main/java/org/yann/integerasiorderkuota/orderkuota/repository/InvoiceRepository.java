@@ -33,8 +33,12 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
     @Query("SELECT COALESCE(MAX(i.amount), :amount - 1) + 1 FROM Invoice i WHERE i.status = 'ACTIVE'")
     Long findNextAvailableAmount(@Param("amount") Long amount);
     @Modifying
-    @Query("UPDATE Invoice i SET i.status = 'PAID' WHERE i.id IN :ids")
-    void updateInvoicesToPaid(@Param("ids") Collection<String> ids);
+    @Query("UPDATE Invoice i " +
+            "SET i.status = 'PAID', i.paidAt = :paidAt " +
+            "WHERE i.id IN :ids")
+    void updateInvoicesToPaid(@Param("ids") Collection<String> ids,
+                              @Param("paidAt") Long paidAt);
+
 
 
 

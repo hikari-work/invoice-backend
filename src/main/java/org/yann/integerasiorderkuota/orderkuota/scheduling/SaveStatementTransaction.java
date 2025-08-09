@@ -52,7 +52,7 @@ public class SaveStatementTransaction {
             statementService.saveAllStatements(Set.copyOf(newStatement));
         });
     }
-    @Scheduled(fixedRate = 10_000)
+    @Scheduled(fixedRate = 1_000)
     public void getPaidInvoice() {
         Map<Long, Invoice> invoiceByAmount = invoiceService.getPendingInvoice()
                 .stream()
@@ -60,6 +60,7 @@ public class SaveStatementTransaction {
                 .collect(Collectors.toMap(Invoice::getAmount, Function.identity()));
 
         Map<String, String> invoiceMap = new HashMap<>();
+        List<Long> statementList = new ArrayList<>();
 
         statementService.getPendingStatement()
                 .stream()
@@ -67,9 +68,11 @@ public class SaveStatementTransaction {
                 .forEach(statement -> {
                     Invoice invoice = invoiceByAmount.get(statement.getKredit());
                     invoiceMap.put(invoice.getUsername(), invoice.getId());
+                    statementList.add(statement.getId());
+
                 });
 
-        statementService.updateBulkStatement(invoiceMap.values());
+        statementService.updateBulkStatement(statementList);
         invoiceService.updateInvoicesToPaid(invoiceMap.values());
 
         sendCallbackUserInvoiceIsPaid(invoiceMap);
@@ -89,6 +92,7 @@ public class SaveStatementTransaction {
                     System.out.println("Callback URL is null for user: " + username);
                     return;
                 }
+                invoice2.setPaidAt(System.currentTimeMillis());
                 CompletableFuture.runAsync(() -> restTemplateBuilder.build().postForEntity(user.getCallbackUrl(), dto, String.class));
             } else {
                 System.out.println("User not found for username: " + username);
@@ -96,7 +100,7 @@ public class SaveStatementTransaction {
         });
     }
 
-    @Scheduled(fixedRate = 60_000)
+    @Scheduled(fixedRate = 1_000)
     @Async("taskScheduler")
     public CompletableFuture<Void> deleteExpiredInvoice() {
         CompletableFuture.runAsync(() -> {
