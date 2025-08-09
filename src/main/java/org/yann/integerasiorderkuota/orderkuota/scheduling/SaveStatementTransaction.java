@@ -49,8 +49,13 @@ public class SaveStatementTransaction {
     @Scheduled(fixedRate = 10_000)
     public void getPaidInvoice() {
         Map<String, String> invoiceMap = new HashMap<>();
-        List<Invoice> pendingInvoice = invoiceService.getPendingInvoice();
+        List<Invoice> pendingInvoice = invoiceService.getPendingInvoice()
+                .stream()
+                .filter(invoice -> invoice.getExpiresAt() > System.currentTimeMillis())
+                .toList();
+
         List<Statement> pendingStatement = statementService.getPendingStatement();
+
         pendingInvoice.forEach(invoice -> pendingStatement.forEach(statement -> {
             if (invoice.getAmount().equals(statement.getKredit())) {
                 invoiceMap.put(invoice.getUsername(), invoice.getId());
@@ -58,6 +63,7 @@ public class SaveStatementTransaction {
                 invoiceService.updateInvoiceStatus(invoice.getId(), InvoiceStatus.PAID);
             }
         }));
+
         sendCallbackUserInvoiceIsPaid(invoiceMap);
     }
     public void sendCallbackUserInvoiceIsPaid(Map<String, String> invoice) {
