@@ -9,6 +9,7 @@ import org.yann.integerasiorderkuota.orderkuota.entity.InvoiceStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, String> {
@@ -21,4 +22,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
     Page<Invoice> getInvoiceByUsernameAndCreatedAt(String username, LocalDateTime createdAt, Pageable pageable);
 
     boolean existsByAmountAndStatus(Long amount, InvoiceStatus status);
+
+    List<Invoice> getInvoiceByStatus(InvoiceStatus status);
 }

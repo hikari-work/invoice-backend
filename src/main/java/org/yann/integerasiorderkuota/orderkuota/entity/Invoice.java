@@ -40,6 +40,7 @@ public class Invoice {
     @Nullable
     private String notes;
 
+
     public Invoice(InvoiceRequest invoiceRequest, String username) {
         this.amount = invoiceRequest.getAmount();
         this.username = username;

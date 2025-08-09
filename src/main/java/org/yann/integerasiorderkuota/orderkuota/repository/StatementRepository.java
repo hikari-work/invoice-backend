@@ -5,8 +5,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.yann.integerasiorderkuota.orderkuota.entity.Statement;
+import org.yann.integerasiorderkuota.orderkuota.entity.StatementStatus;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StatementRepository extends JpaRepository<Statement, Long> {
     Page<Statement> findByUsername(String username, Pageable pageable);
+
+    List<Statement> findByStatementStatus(StatementStatus statementStatus);
 }

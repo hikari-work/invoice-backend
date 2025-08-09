@@ -8,6 +8,8 @@ import org.yann.integerasiorderkuota.orderkuota.entity.Statement;
 import org.yann.integerasiorderkuota.orderkuota.entity.StatementStatus;
 import org.yann.integerasiorderkuota.orderkuota.repository.StatementRepository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,6 +47,10 @@ public class StatementService {
 
     public Page<Statement> getStatementsByUser(String username, int page, int size) {
         return statementRepository.findByUsername(username, PageRequest.of(page, size));
+    }
+
+    public List<Statement> getPendingStatement() {
+        return statementRepository.findByStatementStatus(StatementStatus.NOT_CLAIMED);
     }
 
 }
