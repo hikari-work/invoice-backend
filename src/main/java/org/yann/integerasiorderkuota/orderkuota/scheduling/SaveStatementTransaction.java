@@ -10,6 +10,7 @@ import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementServ
 import org.yann.integerasiorderkuota.orderkuota.dto.CallbackDTO;
 import org.yann.integerasiorderkuota.orderkuota.entity.*;
 import org.yann.integerasiorderkuota.orderkuota.service.InvoiceService;
+import org.yann.integerasiorderkuota.orderkuota.service.SendCallbackService;
 import org.yann.integerasiorderkuota.orderkuota.service.StatementService;
 import org.yann.integerasiorderkuota.orderkuota.service.UserService;
 
@@ -28,6 +29,7 @@ public class SaveStatementTransaction {
     private final StatementService statementService;
     private final InvoiceService invoiceService;
     private final RestTemplateBuilder restTemplateBuilder;
+    private final SendCallbackService sendCallbackService;
 
 
     @Scheduled(fixedRate = 10_000)
@@ -112,7 +114,7 @@ public class SaveStatementTransaction {
                 if (user != null && user.getCallbackUrl() != null) {
                     invoice.setStatus(InvoiceStatus.EXPIRED);
                     CallbackDTO dto = new CallbackDTO(invoice);
-                    restTemplateBuilder.build().postForEntity(user.getCallbackUrl(), dto, String.class);
+                    sendCallbackService.sendCallback(user.getCallbackUrl(), dto);
                 } else {
                     System.out.println("User or callback URL not found for invoice: " + invoice.getId());
                 }
