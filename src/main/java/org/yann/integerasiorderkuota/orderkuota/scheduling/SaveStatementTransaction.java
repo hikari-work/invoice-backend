@@ -13,6 +13,7 @@ import org.yann.integerasiorderkuota.orderkuota.service.StatementService;
 import org.yann.integerasiorderkuota.orderkuota.service.UserService;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -80,7 +81,7 @@ public class SaveStatementTransaction {
                     System.out.println("Callback URL is null for user: " + username);
                     return;
                 }
-                restTemplateBuilder.build().postForEntity(user.getCallbackUrl(), dto, String.class);
+                CompletableFuture.runAsync(() -> restTemplateBuilder.build().postForEntity(user.getCallbackUrl(), dto, String.class));
             } else {
                 System.out.println("User not found for username: " + username);
             }
