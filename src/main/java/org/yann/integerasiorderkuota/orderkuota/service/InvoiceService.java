@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.yann.integerasiorderkuota.orderkuota.entity.Invoice;
 import org.yann.integerasiorderkuota.orderkuota.entity.InvoiceStatus;
+import org.yann.integerasiorderkuota.orderkuota.entity.User;
 import org.yann.integerasiorderkuota.orderkuota.repository.InvoiceRepository;
 
 import java.time.LocalDateTime;
@@ -15,9 +16,16 @@ import java.util.Optional;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
+    private final QRService qRService;
+    private final QrGenerator qrGenerator;
 
-    public InvoiceService(InvoiceRepository invoiceRepository) {
+    public InvoiceService(InvoiceRepository invoiceRepository, QRService qRService, QrGenerator qrGenerator) {
         this.invoiceRepository = invoiceRepository;
+        this.qRService = qRService;
+        this.qrGenerator = qrGenerator;
+    }
+    public boolean isExistingInvoiceActive(Long amount) {
+        return invoiceRepository.existsByAmountAndStatus(amount, InvoiceStatus.PENDING);
     }
 
     public Page<Invoice> getInvoiceByUser(String userId, int page, int size) {
@@ -32,7 +40,9 @@ public class InvoiceService {
         LocalDateTime endTime = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         return invoiceRepository.findByIdAndCreatedAtBetween(userId, startTime, endTime, PageRequest.of(page, size));
     }
-    public Invoice saveInvoice(Invoice invoice) {
+    public Invoice saveInvoice(Invoice invoice, User user) {
+        invoice.setAmount(amountCalculator(invoice.getAmount()));
+        invoice.setQrString(qrGenerator.generateQr(user.getQrisString(),invoice.getAmount()));
         return invoiceRepository.save(invoice);
     }
     public Optional<Invoice> getById(String id) {
@@ -40,6 +50,13 @@ public class InvoiceService {
     }
     public Page<Invoice> getInvoiceByUserAndCreatedAt(String userId, LocalDateTime createdAt, int page, int size) {
         return invoiceRepository.getInvoiceByUsernameAndCreatedAt(userId, createdAt, PageRequest.of(page, size));
+    }
+    public Long amountCalculator(Long amount) {
+        Long generateAmount = amount;
+        while (isExistingInvoiceActive(generateAmount)) {
+            generateAmount += 1;
+        }
+        return generateAmount;
     }
 
 }

@@ -19,4 +19,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
     Page<Invoice> getInvoiceByIdAndStatus(String id, InvoiceStatus status, Pageable pageable);
 
     Page<Invoice> getInvoiceByUsernameAndCreatedAt(String username, LocalDateTime createdAt, Pageable pageable);
+
+    boolean existsByAmountAndStatus(Long amount, InvoiceStatus status);
 }

@@ -64,8 +64,8 @@ public class ControllerAdvice {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(RequestParamNotFullFilled.class)
-    public ResponseEntity<ApiErrorResponse> handleBadRequest(RequestParamNotFullFilled ex, HttpServletRequest request) {
+    @ExceptionHandler({RequestParamNotFullFilled.class, IllegalArgumentException.class})
+    public ResponseEntity<ApiErrorResponse> handleBadRequest(Exception ex, HttpServletRequest request) {
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
