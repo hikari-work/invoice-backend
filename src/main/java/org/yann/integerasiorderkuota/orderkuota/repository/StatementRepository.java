@@ -12,7 +12,6 @@ import org.yann.integerasiorderkuota.orderkuota.entity.StatementStatus;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface StatementRepository extends JpaRepository<Statement, Long> {

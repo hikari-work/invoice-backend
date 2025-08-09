@@ -3,7 +3,6 @@ package org.yann.integerasiorderkuota.orderkuota.scheduling;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementDTO;
@@ -29,7 +28,7 @@ public class SaveStatementTransaction {
     private final StatementService statementService;
     private final InvoiceService invoiceService;
     private final RestTemplateBuilder restTemplateBuilder;
-    private final AsyncConfigurer asyncConfigurer;
+
 
     @Scheduled(fixedRate = 10_000)
     public void saveStatementTransaction() {

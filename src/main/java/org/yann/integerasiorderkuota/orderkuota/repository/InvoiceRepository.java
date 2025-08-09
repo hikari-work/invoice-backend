@@ -13,7 +13,6 @@ import org.yann.integerasiorderkuota.orderkuota.entity.InvoiceStatus;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, String> {
