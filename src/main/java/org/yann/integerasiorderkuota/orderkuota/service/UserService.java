@@ -29,10 +29,10 @@ public class UserService {
 		if (byUsername.isPresent()) {
 			throw new DuplicateUsername("Username Already Registered");
 		}
-		String hashpwed = BCrypt.hashpw(password, BCrypt.gensalt());
+		String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 		userRepository.save(User.builder()
 						.username(username)
-						.password(hashpwed)
+						.password(hashedPassword)
 				.build());
 	}
 	@Transactional

@@ -25,7 +25,6 @@ public class InvoiceService {
         this.invoiceRepository = invoiceRepository;
         this.qrGenerator = qrGenerator;
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public boolean isExistingInvoiceActive(Long amount) {
         return invoiceRepository.existsByAmountAndStatus(amount, InvoiceStatus.PENDING);
     }
