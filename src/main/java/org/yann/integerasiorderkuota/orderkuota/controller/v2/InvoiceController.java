@@ -62,8 +62,8 @@ public class InvoiceController {
     @GetMapping(value = "/qris/{invoiceId}", produces = MediaType.IMAGE_PNG_VALUE)
     @Async("generate_image")
     public CompletableFuture<ResponseEntity<byte[]>> getQris(@PathVariable("invoiceId") String invoiceId,
-                                                             @RequestParam(value = "height") Integer height,
-                                                             @RequestParam(value = "width") Integer width) {
+                                                             @RequestParam(value = "height", defaultValue = "1080") Integer height,
+                                                             @RequestParam(value = "width", defaultValue = "1080") Integer width) {
         Invoice invoice = invoiceService.getById(invoiceId).orElse(null);
         if (invoice == null) {
             return CompletableFuture.completedFuture(ResponseEntity.notFound().build());

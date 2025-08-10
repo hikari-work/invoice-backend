@@ -17,7 +17,7 @@ public class StatementController {
         this.statementService = statementService;
     }
 
-    @GetMapping("/statements/{username}")
+    @GetMapping("/{username}")
     public ResponseEntity<StatementResponse<Statement>> getStatements(@PathVariable("username") String username,
                                                            @RequestParam(defaultValue = "0") int page,
                                                            @RequestParam(defaultValue = "10") int size) {
