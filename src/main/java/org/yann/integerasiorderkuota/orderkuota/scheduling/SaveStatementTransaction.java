@@ -66,6 +66,10 @@ public class SaveStatementTransaction {
 
         statementService.getPendingStatement()
                 .stream()
+                .filter(statement -> {
+                    Invoice invoice = invoiceByAmount.get(statement.getKredit());
+                    return statement.getTransferTime().isAfter(invoice.getCreatedAt());
+                })
                 .filter(statement -> invoiceByAmount.containsKey(statement.getKredit()))
                 .forEach(statement -> {
                     Invoice invoice = invoiceByAmount.get(statement.getKredit());
