@@ -8,7 +8,7 @@ import org.yann.integerasiorderkuota.orderkuota.exception.RequestParamNotFullFil
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/bank")
+@RequestMapping("/api/v2/bank")
 public class Bank {
     private final BankListRequest bankListRequest;
     private final BankInquiryService bankInquiryService;
@@ -39,7 +39,4 @@ public class Bank {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
-
-
 }
