@@ -47,6 +47,7 @@ public class SaveStatementTransaction {
             Set<Long> existingStatementIds = statementService.getAllStatementByIds(Set.copyOf(ids));
             List<Statement> newStatement = results.stream()
                     .filter(result -> !existingStatementIds.contains(result.getId()))
+                    .filter(result -> result.getStatus().equals("IN"))
                     .map(result -> new Statement(result, user.getUsername()))
                     .toList();
 
