@@ -68,7 +68,7 @@ public class SaveStatementTransaction {
                 .stream()
                 .filter(statement -> {
                     Invoice invoice = invoiceByAmount.get(statement.getKredit());
-                    return statement.getTransferTime().isAfter(invoice.getCreatedAt());
+                    return invoice != null && statement.getTransferTime().isAfter(invoice.getCreatedAt());
                 })
                 .filter(statement -> invoiceByAmount.containsKey(statement.getKredit()))
                 .forEach(statement -> {
