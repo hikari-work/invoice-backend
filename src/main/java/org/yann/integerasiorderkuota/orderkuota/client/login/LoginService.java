@@ -15,6 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementDTO;
 import org.yann.integerasiorderkuota.orderkuota.client.settlement.SettlementService;
+import org.yann.integerasiorderkuota.orderkuota.entity.User;
 import org.yann.integerasiorderkuota.orderkuota.service.TransactionService;
 import org.yann.integerasiorderkuota.orderkuota.service.UserService;
 
@@ -60,11 +61,12 @@ public class LoginService {
 			if (!loginDTO.isSuccess()) {
 				return null;
 			}
+			log.info("Login data: {}", loginDTO);
 			userService.saveToken(loginDTO.getResults().getToken(), username);
-			SettlementDTO settlement = settlementService.getSettlement(loginDTO.getResults().getToken());
-			CompletableFuture.runAsync(() -> {
-				userService.updateUserString(settlement, username);
-			});
+			User user = userService.getUserDetailsByUsername(username);
+			SettlementDTO settlement = settlementService.getSettlement(user.getId());
+			log.info("Settlement data: {}", settlement);
+			userService.updateUserString(settlement, username);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}

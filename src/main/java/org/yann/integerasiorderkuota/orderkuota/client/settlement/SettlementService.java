@@ -34,6 +34,9 @@ public class SettlementService {
 
 	public SettlementDTO getSettlement(String uuid) {
 		User username = userService.getUserDetailsByUUID(uuid);
+		if (username == null) {
+			return null;
+		}
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
 		formData.add("requests[qris_history][keterangan]", "");
 		formData.add("requests[qris_history][jumlah]", "");
@@ -75,6 +78,9 @@ public class SettlementService {
 
 	public SettlementDTO getAllSettlement(String uuid, String pages) {
 		User username = userService.getUserDetailsByUUID(uuid);
+		if (username == null) {
+			return null;
+		}
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
 		formData.add("requests[qris_history][keterangan]", "");
 		formData.add("requests[qris_history][jumlah]", "");

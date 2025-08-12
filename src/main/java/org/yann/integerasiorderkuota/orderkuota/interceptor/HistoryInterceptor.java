@@ -28,7 +28,7 @@ public class HistoryInterceptor implements HandlerInterceptor {
             return unauthorized(response);
         }
 
-        String tokenValue = token.substring(7); // Hapus "Bearer "
+        String tokenValue = token.substring(7);
 
         Long expiryTime = mapData.get(tokenValue);
         if (expiryTime != null) {
@@ -42,9 +42,7 @@ public class HistoryInterceptor implements HandlerInterceptor {
         if (!userService.isValidToken(tokenValue)) {
             return unauthorized(response);
         }
-
         mapData.put(tokenValue, System.currentTimeMillis() + (1000L * 60 * 5));
-
         return true;
     }
 

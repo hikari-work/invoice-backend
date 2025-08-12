@@ -29,7 +29,7 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterDTO<?>> register(@Valid @RequestBody RequestRegisterDTO register) {
         RegisterDTO<?> registerDTO = registerService.registerUser(register);
-        return ResponseEntity.ok(RegisterDTO.builder().status("Success")
+        return ResponseEntity.ok(RegisterDTO.builder()
                 .data(Map.of("email", registerDTO))
                 .build());
     }

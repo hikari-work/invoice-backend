@@ -1,6 +1,8 @@
 package org.yann.integerasiorderkuota.orderkuota.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.yann.integerasiorderkuota.orderkuota.client.login.LoginService;
@@ -17,6 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RegisterService {
 
+    private static final Logger log = LoggerFactory.getLogger(RegisterService.class);
     private final UserService userService;
     private final LoginService loginService;
     private final GenerateOTP generateOTP;
@@ -52,6 +55,7 @@ public class RegisterService {
 
         User userDetails = userService.getUserDetailsByUsername(request.getUsername());
         RegisterResponse registerResponse = new RegisterResponse(userDetails);
+        log.info("User {} successfully registered", request.getUsername());
 
         return RegisterDTO.<RegisterResponse>builder()
                 .status("OK")

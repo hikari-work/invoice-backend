@@ -57,7 +57,7 @@ public class ControllerAdvice {
     }
 
 
-    @ExceptionHandler({UserNotFoundException.class, BankNotFound.class, InquiryNotFound.class, InquiryNotFound.class})
+    @ExceptionHandler({UserNotFoundException.class, BankNotFound.class, InquiryNotFound.class, InquiryNotFound.class, NullPointerException.class})
     public ResponseEntity<ApiErrorResponse> handleResourceNotFound(Exception ex, HttpServletRequest request) {
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 LocalDateTime.now(),
