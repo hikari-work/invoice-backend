@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  myapp:
+    build: .
+    container_name: my-java-app
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+
+  mysql:
+    image: mysql:8.4-oracle
+    container_name: my-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

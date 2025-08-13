@@ -19,7 +19,6 @@ import org.yann.integerasiorderkuota.orderkuota.entity.User;
 import org.yann.integerasiorderkuota.orderkuota.service.TransactionService;
 import org.yann.integerasiorderkuota.orderkuota.service.UserService;
 
-import java.util.concurrent.CompletableFuture;
 
 
 @Component
