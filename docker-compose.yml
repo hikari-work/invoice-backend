@@ -9,12 +9,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydb
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: rootpass
-      SERVER_PORT: 8080
+      SERVER_PORT: 3000
     ports:
-      - "8080:8080"
+      - "9090:3000"
 
   mysql:
-    image: mysql:8.4-oracle
+    image: mariadb:10.6
     container_name: my-mysql
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
