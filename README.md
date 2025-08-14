@@ -83,6 +83,7 @@ application.config.random.reff.id=false
     ```
     nama file bisa berbeda tergantung pada nama aplikasi Anda, dan versi yang digunakan.
   - Aplikasi akan berjalan pada port yang telah Anda tentukan di `application.properties`.
+  - Bisa dijalankan dengan docker lewat `docker build -t invoice-management-system .` dan `docker run -p 8080:8080 invoice-management-system`.
 
 ## 4. **API DOCUMENTATION**
 
