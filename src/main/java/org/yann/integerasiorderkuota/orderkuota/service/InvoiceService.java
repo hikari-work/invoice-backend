@@ -23,6 +23,7 @@ import java.util.Random;
 public class InvoiceService {
 
     private static final Logger log = LoggerFactory.getLogger(InvoiceService.class);
+
     @Value("${application.config.random.reff.id}")
     private boolean randomReffId;
 
@@ -33,9 +34,6 @@ public class InvoiceService {
         this.invoiceRepository = invoiceRepository;
         this.qrGenerator = qrGenerator;
     }
-    public boolean isExistingInvoiceActive(Long amount) {
-        return invoiceRepository.existsByAmountAndStatus(amount, InvoiceStatus.PENDING);
-    }
 
     public Page<Invoice> getInvoiceByUser(String userId, int page, int size) {
         return invoiceRepository.getInvoiceById(userId, PageRequest.of(page, size));
@@ -44,10 +42,10 @@ public class InvoiceService {
         return invoiceRepository.getInvoiceByIdAndStatus(userId, status, PageRequest.of(page, size));
     }
 
-    public Page<Invoice> getInvoiceByUserAndDataRange(String userId, String startDate, String endDate, int page, int size) {
+    public List<Invoice> getInvoiceByUserAndDataRange(String userId, String startDate, String endDate) {
         LocalDateTime startTime = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime endTime = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        return invoiceRepository.findByIdAndCreatedAtBetween(userId, startTime, endTime, PageRequest.of(page, size));
+        return invoiceRepository.findByIdAndCreatedAtBetween(userId, startTime, endTime);
     }
     @Transactional
     public Invoice saveInvoice(Invoice invoice, User user) {

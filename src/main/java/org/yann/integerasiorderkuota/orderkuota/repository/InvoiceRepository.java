@@ -18,7 +18,7 @@ import java.util.List;
 public interface InvoiceRepository extends JpaRepository<Invoice, String> {
     Page<Invoice> getInvoiceById(String id, Pageable pageable);
 
-    Page<Invoice> findByIdAndCreatedAtBetween(String id, LocalDateTime createdAtAfter, LocalDateTime createdAtBefore, Pageable pageable);
+    List<Invoice> findByIdAndCreatedAtBetween(String id, LocalDateTime createdAtAfter, LocalDateTime createdAtBefore);
 
     Page<Invoice> getInvoiceByIdAndStatus(String id, InvoiceStatus status, Pageable pageable);
 

@@ -1,5 +1,6 @@
 package org.yann.integerasiorderkuota.orderkuota.service;
 
+import com.opencsv.CSVWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,6 +10,12 @@ import org.yann.integerasiorderkuota.orderkuota.entity.Statement;
 import org.yann.integerasiorderkuota.orderkuota.entity.StatementStatus;
 import org.yann.integerasiorderkuota.orderkuota.repository.StatementRepository;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +66,38 @@ public class StatementService {
     @Transactional
     public void updateBulkStatement(Collection<Long> statements) {
         statementRepository.updateStatementsToClaimed(statements);
+    }
+
+    public List<Statement> getReportStatements(String username, String startDate, String endDate) {
+        LocalDateTime startTime = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay();
+        LocalDateTime endTime = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")). atTime(23, 59, 59);
+        return statementRepository.findByUsernameAndTransferTimeBetween(username, startTime, endTime);
+    }
+
+    public byte[] getCsvReport(List<Statement> statements) {
+       try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+           OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+           CSVWriter csvWriter = new CSVWriter(writer);
+           csvWriter.writeNext(new String[]{"id", "username", "debet", "kredit", "keterangan", "status", "status_transfer", "transfer_time"});
+           for (Statement statement : statements) {
+                String[] data = {
+                          String.valueOf(statement.getId()),
+                          statement.getUsername(),
+                          String.valueOf(statement.getDebet()),
+                          String.valueOf(statement.getKredit()),
+                          statement.getKeterangan(),
+                          statement.getStatementStatus().name(),
+                          statement.getStatementStatus().toString(),
+                          statement.getTransferTime() != null ? statement.getTransferTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")) : ""
+                };
+                csvWriter.writeNext(data);
+
+           }
+           csvWriter.flush();
+           return outputStream.toByteArray();
+       } catch (Exception e) {
+           throw new RuntimeException(e);
+       }
     }
 
 }

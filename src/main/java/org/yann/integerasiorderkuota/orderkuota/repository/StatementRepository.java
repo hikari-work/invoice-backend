@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.yann.integerasiorderkuota.orderkuota.entity.Statement;
 import org.yann.integerasiorderkuota.orderkuota.entity.StatementStatus;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,4 +24,5 @@ public interface StatementRepository extends JpaRepository<Statement, Long> {
     @Query("UPDATE Statement s SET s.statementStatus = 'CLAIMED' WHERE s.id IN :ids")
     void updateStatementsToClaimed(@Param("ids") Collection<Long> ids);
 
+    List<Statement> findByUsernameAndTransferTimeBetween(String username, LocalDateTime transferTimeAfter, LocalDateTime transferTimeBefore);
 }
