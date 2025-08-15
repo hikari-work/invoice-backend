@@ -330,7 +330,7 @@ username adalah mandatory, sedangkan email dan callback_url adalah optional.
 
 ### 4. Get Mutasi
 
-GET /api/v2/mutasi/{username}
+GET /api/v2/statements/{username}
 **Headers:**
 ```http
 Authorization : Bearer <token>
