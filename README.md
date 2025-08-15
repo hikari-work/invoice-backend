@@ -486,7 +486,7 @@ Status invoice dapat berupa:
 ```
 
 ### 8. Generate QRIS
-GET /api/v2/invoice/qris/{invoice_id}
+GET /api/v2/invoices/qris/{invoice_id}
 
 Query Parameter:
 ```http
