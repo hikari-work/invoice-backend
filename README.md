@@ -244,7 +244,7 @@ Simpan token ini untuk digunakan pada API lainnya.
 
 ### 3. Details User
 
-GET /api/v2/users/details
+GET /api/v2/users/details/{username}
 
 
 **Headers:**
@@ -330,7 +330,7 @@ username adalah mandatory, sedangkan email dan callback_url adalah optional.
 
 ### 4. Get Mutasi
 
-GET /api/v2/mutasi/{username}
+GET /api/v2/statements/{username}
 **Headers:**
 ```http
 Authorization : Bearer <token>
@@ -486,7 +486,7 @@ Status invoice dapat berupa:
 ```
 
 ### 8. Generate QRIS
-GET /api/v2/invoice/qris/{invoice_id}
+GET /api/v2/invoices/qris/{invoice_id}
 
 Query Parameter:
 ```http
