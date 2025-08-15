@@ -244,7 +244,7 @@ Simpan token ini untuk digunakan pada API lainnya.
 
 ### 3. Details User
 
-GET /api/v2/users/details
+GET /api/v2/users/details/{username}
 
 
 **Headers:**
