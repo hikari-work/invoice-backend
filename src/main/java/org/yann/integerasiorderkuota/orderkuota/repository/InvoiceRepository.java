@@ -39,6 +39,26 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
                               @Param("paidAt") Long paidAt);
 
 
+    @Query(value = """
+        WITH RECURSIVE sequence_check AS (
+            SELECT :startAmount as seq_num
+            UNION ALL
+            SELECT seq_num + 1 
+            FROM sequence_check 
+            WHERE seq_num < :startAmount + 99
+              AND EXISTS (
+                  SELECT 1 FROM invoices 
+                  WHERE amount = seq_num AND status = 'PENDING'
+              )
+        )
+        SELECT MIN(seq_num) 
+        FROM sequence_check 
+        WHERE NOT EXISTS (
+            SELECT 1 FROM invoices
+            WHERE amount = seq_num AND status = 'PENDING'
+        )
+        """, nativeQuery = true)
+    Long findNextAvailableSequence(@Param("startAmount") Long startAmount);
 
 
 }

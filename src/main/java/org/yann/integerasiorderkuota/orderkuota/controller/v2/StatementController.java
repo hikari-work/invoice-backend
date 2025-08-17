@@ -41,13 +41,11 @@ public class StatementController {
                                                                @RequestParam(value = "type", defaultValue = "json") String type) {
 
         return CompletableFuture.supplyAsync(()-> statementService.getReportStatements(username, startDate, endDate))
-                .thenApplyAsync(data -> {
-                    return switch (type) {
-                        case "json" -> ResponseEntity.ok(data);
-                        case "csv" -> ResponseEntity.ok(statementService.getCsvReport(data));
-                        default -> ResponseEntity.badRequest().body("Unsupported report type: " + type);
-                    };
-        });
+                .thenApplyAsync(data -> switch (type) {
+                    case "json" -> ResponseEntity.ok(data);
+                    case "csv" -> ResponseEntity.ok(statementService.getCsvReport(data));
+                    default -> ResponseEntity.badRequest().body("Unsupported report type: " + type);
+                });
     }
 
 }

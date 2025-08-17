@@ -49,8 +49,9 @@ public class InvoiceService {
     }
     @Transactional
     public Invoice saveInvoice(Invoice invoice, User user) {
-        invoice.setAmount(amountCalculator(invoice.getAmount()));
-        invoice.setQrString(qrGenerator.generateQr(user.getQrisString(),invoice.getAmount()));
+        Long amount = amountCalculator(invoice.getAmount());
+        invoice.setAmount(amount);
+        invoice.setQrString(qrGenerator.generateQr(user.getQrisString(),amount));
         return invoiceRepository.save(invoice);
     }
     public Optional<Invoice> getById(String id) {
@@ -75,7 +76,7 @@ public class InvoiceService {
             throw new IllegalStateException("Tidak dapat menemukan jumlah yang unik");
         }
         log.info("Using provided amount: {}", amount);
-        return invoiceRepository.findNextAvailableAmount(amount);
+        return invoiceRepository.findNextAvailableSequence(amount);
     }
 
     private boolean isAmountIsExist(Long amount) {
