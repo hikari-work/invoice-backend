@@ -65,7 +65,7 @@ public class SettlementService {
 		headers.set("timestamp", timestamp);
 		headers.set("signature", signature);
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
-		String url = "https://app.orderkuota.com/api/v2/get";
+		String url = "https://app.orderkuota.com/api/v2/qris/mutasi/" + username.getToken().split(":")[0];
 		ResponseEntity<String> data = restTemplateBuilder.exchange(
 				url,
 				HttpMethod.POST,
@@ -99,6 +99,8 @@ public class SettlementService {
 		if (username == null) {
 			return null;
 		}
+
+		// Body (form-urlencoded)
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
 		formData.add("requests[qris_history][keterangan]", "");
 		formData.add("requests[qris_history][jumlah]", "");
@@ -114,33 +116,38 @@ public class SettlementService {
 		formData.add("requests[qris_history][ke_tanggal]", "");
 		formData.add("app_reg_id", "cW7nrZuwSTmHMUq38nsYDt:APA91bHtuZh8Rtb4tu4-QkspgkW8WbHF2ZLMHqNesxgpdIDj502JW927xzpwbKPeBt11SYvkFHtHKCVM3rhUkjCku4g5Bm0CD76ACG5ABGy-JfVXdMi09sU");
 		formData.add("phone_uuid", "cW7nrZuwSTmHMUq38nsYDt");
+
 		String forCalculate = buildBody(formData.toSingleValueMap());
 		String signature = generateSignature(forCalculate, timestamp, username.getToken());
 
+		// Headers
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		headers.set("User-Agent", "okhttp/4.12.0");
 		headers.set("timestamp", timestamp);
 		headers.set("signature", signature);
+
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
-		String url = "https://app.orderkuota.com/api/v2/get";
-		ResponseEntity<String> data = restTemplateBuilder.exchange(
+
+		String url = "https://app.orderkuota.com/api/v2/qris/mutasi/" + username.getToken().split(":")[0];
+
+		ResponseEntity<String> response = restTemplateBuilder.exchange(
 				url,
 				HttpMethod.POST,
 				request,
 				String.class
 		);
-		log.info("Hasil : {}", data.getBody());
+
+		log.info("Response: {}", response.getBody());
 
 		ObjectMapper mapper = new ObjectMapper();
-		SettlementDTO dto;
 		try {
-			dto = mapper.readValue(data.getBody(), SettlementDTO.class);
+			return mapper.readValue(response.getBody(), SettlementDTO.class);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Failed to parse response", e);
 		}
-		return dto;
 	}
+
 
 	public SettlementDTO getSettlementAllHistory(String uuid) {
 
