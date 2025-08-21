@@ -31,8 +31,8 @@ public class BankListRequest {
         form.add("phone_uuid", "cW7nrZuwSTmHMUq38nsYDt");
         form.add("auth_username", user.getUsername());
         form.add("auth_token", user.getToken());
-        form.add("app_version_name", "25.07.11");
-        form.add("app_version_code", "250711");
+        form.add("app_version_name", "25.08.11");
+        form.add("app_version_code", "250811");
         form.add("ui_mode", "dark");
         form.add("requests[send_money][action]", "get");
         form.add("requests[0]", "account");

@@ -73,11 +73,11 @@ public class BankInquiryService {
         body.add("requests[send_money][bank]", bankName);
         body.add("request_time", String.valueOf(System.currentTimeMillis()));
         body.add("phone_android_version", "13");
-        body.add("app_version_code", "250718");
+        body.add("app_version_code", "250811");
         body.add("auth_username", userId);
         body.add("requests[send_money][branch]", "");
         body.add("auth_token", user.getToken());
-        body.add("app_version_name", "25.07.18");
+        body.add("app_version_name", "25.08.11");
         body.add("requests[send_money][action]", "check");
         body.add("ui_mode", "dark");
 

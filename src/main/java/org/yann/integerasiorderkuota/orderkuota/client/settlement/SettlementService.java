@@ -41,11 +41,11 @@ public class SettlementService {
 		formData.add("requests[qris_history][keterangan]", "");
 		formData.add("requests[qris_history][jumlah]", "");
 		formData.add("phone_android_version", "13");
-		formData.add("app_version_code", "250711");
+		formData.add("app_version_code", "250811");
 		formData.add("auth_username", username.getUsername());
 		formData.add("requests[qris_history][page]", "1");
 		formData.add("auth_token", username.getToken());
-		formData.add("app_version_name", "25.07.11");
+		formData.add("app_version_name", "25.08.11");
 		formData.add("ui_mode", "dark");
 		formData.add("requests[qris_history][dari_tanggal]", "");
 		formData.add("requests[0]", "account");
@@ -85,11 +85,11 @@ public class SettlementService {
 		formData.add("requests[qris_history][keterangan]", "");
 		formData.add("requests[qris_history][jumlah]", "");
 		formData.add("phone_android_version", "13");
-		formData.add("app_version_code", "250711");
+		formData.add("app_version_code", "250811");
 		formData.add("auth_username", username.getUsername());
 		formData.add("requests[qris_history][page]", pages);
 		formData.add("auth_token", username.getToken());
-		formData.add("app_version_name", "25.07.11");
+		formData.add("app_version_name", "25.08.11");
 		formData.add("ui_mode", "dark");
 		formData.add("requests[qris_history][dari_tanggal]", "");
 		formData.add("requests[0]", "account");

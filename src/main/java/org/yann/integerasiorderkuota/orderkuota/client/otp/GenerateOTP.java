@@ -29,7 +29,7 @@ public class GenerateOTP {
 		map.add("phone_android_version", "13");
 		map.add("phone_model", "SM-G981N");
 		map.add("phone_uuid", "");
-		map.add("app_version_code", "250711");
+		map.add("app_version_code", "250811");
 		map.add("ui_mode", "dark");
 		map.add("username", username);
 
