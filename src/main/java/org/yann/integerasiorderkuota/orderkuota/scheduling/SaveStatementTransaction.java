@@ -34,9 +34,6 @@ public class SaveStatementTransaction {
 
     @Scheduled(fixedRate = 10_000)
     public void saveStatementTransaction() {
-        if (invoiceService.getPendingInvoice().isEmpty()) {
-            return;
-        }
         List<User> allUser = userService.getAllUser();
 
         allUser.parallelStream().forEach(user -> {
