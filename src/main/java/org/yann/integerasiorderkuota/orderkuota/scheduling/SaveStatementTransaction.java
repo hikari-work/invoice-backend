@@ -53,7 +53,6 @@ public class SaveStatementTransaction {
                     .filter(result -> result.getStatus().equals("IN"))
                     .map(result -> new Statement(result, user.getUsername()))
                     .toList();
-
             statementService.saveAllStatements(Set.copyOf(newStatement));
         });
     }

@@ -39,7 +39,6 @@ public class StatementController {
                                                                    @RequestParam(value = "start_date") String startDate,
                                                                    @RequestParam(value = "end_date") String endDate,
                                                                @RequestParam(value = "type", defaultValue = "json") String type) {
-
         return CompletableFuture.supplyAsync(()-> statementService.getReportStatements(username, startDate, endDate))
                 .thenApplyAsync(data -> switch (type) {
                     case "json" -> ResponseEntity.ok(data);
